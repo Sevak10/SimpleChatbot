@@ -1,4 +1,4 @@
-﻿using Microsoft.Agents.AI;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Client;
@@ -22,8 +22,13 @@ string endpoint = "http://localhost:11434";
 
 string model = "qwen3.5:9b";
 
-IChatClient ollamaClient = new OllamaApiClient(
-    new Uri(endpoint), model);
+using var ollamaHttpClient = new HttpClient
+{
+    BaseAddress = new Uri(endpoint),
+    Timeout = TimeSpan.FromMinutes(10)
+};
+
+IChatClient ollamaClient = new OllamaApiClient(ollamaHttpClient, model);
 
 using var services = new ServiceCollection()
     .AddSingleton<TimeProvider>(TimeProvider.System)
@@ -55,7 +60,18 @@ while (true)
     if (string.IsNullOrWhiteSpace(input))
         continue;
 
-    var response = await agent.RunAsync(input, session);
+    using var cts = new CancellationTokenSource();
+    var spinnerTask = ShowSpinnerAsync(cts.Token);
+    AgentResponse response;
+    try
+    {
+        response = await agent.RunAsync(input, session);
+    }
+    finally
+    {
+        cts.Cancel();
+        await spinnerTask;
+    }
     Console.WriteLine($"[ASSISTANT]: {response.Text}");
     DebugHistory(session);
 }
@@ -110,4 +126,23 @@ static string SingleLine(string? text)
         : lineLimit <= 3
             ? singleLine[..lineLimit]
             : $"{singleLine[..(lineLimit - 3)]}...";
+}
+
+static async Task ShowSpinnerAsync(CancellationToken cancellationToken)
+{
+    char[] frames = ['|', '/', '-', '\\'];
+    var i = 0;
+
+    try
+    {
+        while (true)
+        {
+            Console.Write($"\r[AI WORKING] {frames[i++ % frames.Length]}");
+            await Task.Delay(100, cancellationToken);
+        }
+    }
+    catch (OperationCanceledException)
+    {
+        Console.Write("\r                 \r");
+    }
 }

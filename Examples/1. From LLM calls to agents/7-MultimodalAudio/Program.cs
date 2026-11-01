@@ -1,4 +1,4 @@
-﻿
+
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -39,21 +39,30 @@ var transcriptionTimer = Stopwatch.StartNew();
 
 string transcription;
 
-using (var whisperFactory =
-       WhisperFactory.FromPath(whisperModelPath))
-using (var processor = whisperFactory.CreateBuilder()
-           .WithLanguage("fr")
-           .Build())
-using (var audio = File.OpenRead(audioPath))
 {
-    var segments = new List<string>();
-
-    await foreach (var result in processor.ProcessAsync(audio))
+    using var transcriptionCts = new CancellationTokenSource();
+    var transcriptionSpinnerTask = ShowSpinnerAsync(transcriptionCts.Token);
+    try
     {
-        segments.Add(result.Text);
-    }
+        using var whisperFactory = WhisperFactory.FromPath(whisperModelPath);
+        using var processor = whisperFactory.CreateBuilder()
+            .WithLanguage("fr")
+            .Build();
+        using var audio = File.OpenRead(audioPath);
+        var segments = new List<string>();
 
-    transcription = string.Join(" ", segments);
+        await foreach (var result in processor.ProcessAsync(audio))
+        {
+            segments.Add(result.Text);
+        }
+
+        transcription = string.Join(" ", segments);
+    }
+    finally
+    {
+        transcriptionCts.Cancel();
+        await transcriptionSpinnerTask;
+    }
 }
 
 transcriptionTimer.Stop();
@@ -98,18 +107,26 @@ var request = new
     }
 };
 
-using var response = await httpClient.PostAsJsonAsync(
-    "/api/chat",
-    request);
-
-response.EnsureSuccessStatusCode();
-
-JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-var translatedText = json
-    .GetProperty("message")
-    .GetProperty("content")
-    .GetString();
+string? translatedText;
+using (var translationCts = new CancellationTokenSource())
+{
+    var translationSpinnerTask = ShowSpinnerAsync(translationCts.Token);
+    try
+    {
+        using var response = await httpClient.PostAsJsonAsync("/api/chat", request);
+        response.EnsureSuccessStatusCode();
+        JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        translatedText = json
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
+    }
+    finally
+    {
+        translationCts.Cancel();
+        await translationSpinnerTask;
+    }
+}
 
 translationTimer.Stop();
 
@@ -118,3 +135,22 @@ Console.WriteLine(
     $"Translation time: {translationTimer.Elapsed}");
 
 Console.WriteLine("\nCompleted!");
+
+static async Task ShowSpinnerAsync(CancellationToken cancellationToken)
+{
+    char[] frames = ['|', '/', '-', '\\'];
+    var i = 0;
+
+    try
+    {
+        while (true)
+        {
+            Console.Write($"\r[AI WORKING] {frames[i++ % frames.Length]}");
+            await Task.Delay(100, cancellationToken);
+        }
+    }
+    catch (OperationCanceledException)
+    {
+        Console.Write("\r                 \r");
+    }
+}

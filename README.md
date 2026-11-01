@@ -13,6 +13,7 @@ A collection of small projects that show how to build applications with large la
 5. **StructuredOutput** — Produces responses in a structured format.
 6. **MultimodalImages** — Sends images to a multimodal model.
 7. **MultimodalAudio** — Works with audio input or output.
+8. **ChatbotWithThinking** — Streams a concise “Thinking Process” summary followed by the answer as Ollama generates it.
 
 ### 2. Giving agents capabilities: tools and MCP
 
@@ -44,6 +45,13 @@ You also need the .NET SDK version targeted by the project. The current projects
 1. Clone or download this repository.
 2. Install the prerequisites above and start Ollama.
 3. Open `SimpleChatbot.slnx` in your IDE.
-4. Choose a project and run it.
+4. Choose a project and run it. For example, run ChatbotWithThinking with:
+
+   ```bash
+   dotnet run --project "Examples/1. From LLM calls to agents/8-ChatbotWithThinking/ChatbotWithThinking.csproj"
+   ```
 
 Each example has its own project folder under `Examples`.
+
+
+
