@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Examples/" />
+  <Folder Name="/Examples/1. From LLM calls to agents/">
+    <Project Path="Examples/1. From LLM calls to agents/1-SimpleChatbot/SimpleChatbot.csproj" />
+    <Project Path="Examples/1. From LLM calls to agents/2-ChatbotWithHistory/ChatbotWithHistory.csproj" />
+    <Project Path="Examples/1. From LLM calls to agents/3-ChatbotWithTokenUsage/ChatbotWithTokenUsage.csproj" />
+    <Project Path="Examples/1. From LLM calls to agents/4-ChatbotPersonas/ChatbotPersonas.csproj" />
+    <Project Path="Examples/1. From LLM calls to agents/5-StructuredOutput/StructuredOutput.csproj" Id="d9d07bca-4f17-4b91-bd6d-8503b6458c4b" />
+    <Project Path="Examples/1. From LLM calls to agents/6-MultimodalImages/MultimodalImages.csproj" Id="f9eb3114-bcea-4f6e-869e-bc27e7e301ad" />
+    <Project Path="Examples/1. From LLM calls to agents/7-MultimodalAudio/MultimodalAudio.csproj" Id="fd8b1775-ebaa-4e5a-93b5-c57c6c861825" />
+  </Folder>
+  <Folder Name="/Examples/2. Giving agents capabilities - tools and MCP/" />
+  <Folder Name="/Examples/3. Orchestrating agents and workflows/" />
+</Solution>
