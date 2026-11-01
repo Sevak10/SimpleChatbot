@@ -2,8 +2,6 @@
 using OllamaSharp;
 using System.Diagnostics;
 
-Console.WriteLine("Hello, World!");
-
 string endpoint = "http://localhost:11434";
 
 string model = "qwen3.5:9b";

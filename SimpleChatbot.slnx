@@ -9,6 +9,9 @@
     <Project Path="Examples/1. From LLM calls to agents/6-MultimodalImages/MultimodalImages.csproj" Id="f9eb3114-bcea-4f6e-869e-bc27e7e301ad" />
     <Project Path="Examples/1. From LLM calls to agents/7-MultimodalAudio/MultimodalAudio.csproj" Id="fd8b1775-ebaa-4e5a-93b5-c57c6c861825" />
   </Folder>
-  <Folder Name="/Examples/2. Giving agents capabilities - tools and MCP/" />
+  <Folder Name="/Examples/2. Giving agents capabilities - tools and MCP/">
+    <Project Path="ChatbotAgentWithDependencyInjection/ChatbotAgentWithDependencyInjection.csproj" Id="8669c9c3-629a-4e2a-b16d-0fedde909d31" />
+    <Project Path="ChatbotAgentWithTools/ChatbotAgentWithTools.csproj" Id="6cc4e8a6-bed7-48d8-b4ee-437d6e2eac9d" />
+  </Folder>
   <Folder Name="/Examples/3. Orchestrating agents and workflows/" />
 </Solution>
