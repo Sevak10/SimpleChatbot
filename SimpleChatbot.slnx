@@ -13,5 +13,9 @@
     <Project Path="ChatbotAgentWithDependencyInjection/ChatbotAgentWithDependencyInjection.csproj" Id="8669c9c3-629a-4e2a-b16d-0fedde909d31" />
     <Project Path="ChatbotAgentWithTools/ChatbotAgentWithTools.csproj" Id="6cc4e8a6-bed7-48d8-b4ee-437d6e2eac9d" />
   </Folder>
+  <Folder Name="/Examples/2. Giving agents capabilities - tools and MCP/3 - ChatbotAgentWithMcpServer/">
+    <Project Path="ChatbotAgentWithMcpServer/ChatbotAgentWithMcpServer.csproj" Id="25c28b6e-de4f-4032-9a87-773d90af7253" />
+    <Project Path="DateTimeMcpServer/DateTimeMcpServer.csproj" Id="01e0d84f-1ecc-4539-a7ae-988ad550b4e3" />
+  </Folder>
   <Folder Name="/Examples/3. Orchestrating agents and workflows/" />
 </Solution>
