@@ -17,11 +17,13 @@ A collection of small projects that show how to build applications with large la
 
 ### 2. Giving agents capabilities: tools and MCP
 
-🚧 Examples coming soon.
+1. **ChatbotAgentWithTools** — Gives the agent direct date and time tools.
+2. **ChatbotAgentWithDependencyInjection** — Resolves `TimeProvider` through dependency injection for its date and time tools.
+3. **ChatbotAgentWithMcpServer** — Connects to a separate `DateTimeMcpServer` over MCP and gives the returned tools to the agent.
 
 ### 3. Orchestrating agents and workflows
 
-🚧 Examples coming soon.
+1. **TerribleStartupPitchManualOrchestration** — Runs a Founder agent to create a playful startup pitch, then passes that pitch to an Investor agent for review. The application controls the sequence and gives each agent a separate session.
 
 ## 🛠️ Prerequisites
 
@@ -52,6 +54,7 @@ You also need the .NET SDK version targeted by the project. The current projects
    ```
 
 Each example has its own project folder under `Examples`.
+
 
 
 
