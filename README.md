@@ -13,7 +13,7 @@ A collection of small projects that show how to build applications with large la
 5. **StructuredOutput** — Produces responses in a structured format.
 6. **MultimodalImages** — Sends images to a multimodal model.
 7. **MultimodalAudio** — Works with audio input or output.
-8. **ChatbotWithThinking** — Streams a concise “Thinking Process” summary followed by the answer as Ollama generates it.
+8. **ChatbotWithThinking** — Streams a concise “Thinking Process” summary followed by the answer.
 
 ### 2. Giving agents capabilities: tools and MCP
 
@@ -25,27 +25,35 @@ A collection of small projects that show how to build applications with large la
 
 1. **TerribleStartupPitchManualOrchestration** — Runs a Founder agent to create a playful startup pitch, then passes that pitch to an Investor agent for review. The application controls the sequence and gives each agent a separate session.
 
-## 🛠️ Prerequisites
+## 🛠️ Prerequisites and provider setup
 
-These examples use [Ollama](https://ollama.com/) to run language models locally. Everyone who wants to run the examples needs to:
+Chat and agent examples default to Gemini through Google's OpenAI-compatible API. Before running one, open its `Program.cs` and replace `Sevak_key` with your Gemini API key. The endpoint and model are already set to Google's Gemini API and Gemini 3.5 Flash-Lite:
 
-1. Install Ollama on their computer.
-2. Download the model required by the project they want to run. For example:
+```csharp
+bool useGemini = true;
+string apiKey = "YOUR_GEMINI_API_KEY";
+string endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/";
+string model = "gemini-3.5-flash-lite";
+```
 
-   ```bash
-   ollama pull qwen3.5:9b
-   ```
+Set `useGemini` to `false` to use Ollama instead. Install [Ollama](https://ollama.com/), download the model required by the project, and make sure it is running. For example:
 
-3. Make sure Ollama is running. The examples connect to `http://localhost:11434`.
+```bash
+ollama pull qwen3.5:9b
+```
 
-The model name can vary by project. Check that project's `Program.cs` and download the model specified there with `ollama pull <model-name>`.
+Ollama examples connect to `http://localhost:11434`. Most projects use `qwen3.5:9b` when Ollama is selected.
 
-You also need the .NET SDK version targeted by the project. The current projects target .NET 11 (`net11.0`), which requires the .NET 11 SDK.
+Install the .NET SDK matching the project's target framework. The solution contains projects targeting both .NET 10 and .NET 11; check the project's `.csproj` file if needed.
+
+The **MultimodalAudio** example transcribes speech locally with Whisper, then translates the transcription using the selected Gemini or Ollama provider. It expects `welcome-fr.wav` in the project's output directory and downloads the Whisper model on first run.
+
+The **ChatbotAgentWithMcpServer** example also requires the `DateTimeMcpServer` project to be running. Start that server before starting the chatbot.
 
 ## 🚀 Getting started
 
 1. Clone or download this repository.
-2. Install the prerequisites above and start Ollama.
+2. Replace `Sevak_key` in the chosen project's `Program.cs` with your Gemini API key, or configure Ollama and set `useGemini` to `false`.
 3. Open `SimpleChatbot.slnx` in your IDE.
 4. Choose a project and run it. For example, run ChatbotWithThinking with:
 
@@ -53,7 +61,7 @@ You also need the .NET SDK version targeted by the project. The current projects
    dotnet run --project "Examples/1. From LLM calls to agents/8-ChatbotWithThinking/ChatbotWithThinking.csproj"
    ```
 
-Each example has its own project folder under `Examples`.
+Each example has its own project folder under `Examples`. The additional agent projects are at the repository root.
 
 
 

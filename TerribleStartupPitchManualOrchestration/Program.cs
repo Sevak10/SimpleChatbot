@@ -1,18 +1,19 @@
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
+using OpenAI;
+using System.ClientModel;
 
-const string endpoint = "http://localhost:11434";
-const string model = "qwen3.5:9b";
-
-using var ollamaHttpClient = new HttpClient
-{
-    BaseAddress = new Uri(endpoint),
-    Timeout = TimeSpan.FromMinutes(10)
-};
-
-IChatClient ollamaClient = new OllamaApiClient(ollamaHttpClient, model);
-using IChatClient chatClient = ollamaClient;
+const bool useGemini = true;
+const string apiKey = "YOUR_GEMINI_API_KEY";
+const string endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/";
+const string model = "gemini-3.5-flash-lite";
+IChatClient configuredClient;
+if (useGemini)
+    configuredClient = new OpenAIClient(new ApiKeyCredential(apiKey), new OpenAIClientOptions { Endpoint = new Uri(endpoint) }).GetChatClient(model).AsIChatClient();
+else
+    configuredClient = new OllamaApiClient(new HttpClient { BaseAddress = new Uri("http://localhost:11434"), Timeout = TimeSpan.FromMinutes(10) }, "qwen3.5:9b");
+using IChatClient chatClient = configuredClient;
 
 AIAgent founder = CreateAgent(chatClient, "Founder", """
     You are the Founder in a fictional, lighthearted startup pitch competition.

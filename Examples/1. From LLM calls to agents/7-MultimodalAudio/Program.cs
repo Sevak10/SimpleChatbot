@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-const string ollamaEndpoint = "http://localhost:11434";
-const string model = "qwen3.5:9b";
+const bool useGemini = true;
+const string apiKey = "YOUR_GEMINI_API_KEY";
+const string endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/";
+const string model = "gemini-3.5-flash-lite";
 
 var audioPath = Path.Combine(
     AppContext.BaseDirectory,
@@ -71,20 +73,22 @@ Console.WriteLine($"\n[TRANSCRIPTION]: {transcription}");
 Console.WriteLine(
     $"Transcription time: {transcriptionTimer.Elapsed}");
 
-// 3. Translate using local Ollama Qwen
-Console.WriteLine("\nTranslating with Ollama...");
+// 3. Translate using the selected chat provider
+Console.WriteLine(useGemini ? "\nTranslating with Gemini..." : "\nTranslating with Ollama...");
 
 var translationTimer = Stopwatch.StartNew();
 
 using var httpClient = new HttpClient
 {
-    BaseAddress = new Uri(ollamaEndpoint),
+    BaseAddress = new Uri(useGemini ? endpoint : "http://localhost:11434"),
     Timeout = TimeSpan.FromMinutes(10)
 };
+if (useGemini)
+    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
 var request = new
 {
-    model,
+    model = useGemini ? model : "qwen3.5:9b",
     stream = false,
     messages = new[]
     {
@@ -113,13 +117,12 @@ using (var translationCts = new CancellationTokenSource())
     var translationSpinnerTask = ShowSpinnerAsync(translationCts.Token);
     try
     {
-        using var response = await httpClient.PostAsJsonAsync("/api/chat", request);
+        using var response = await httpClient.PostAsJsonAsync(useGemini ? "chat/completions" : "/api/chat", request);
         response.EnsureSuccessStatusCode();
         JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        translatedText = json
-            .GetProperty("message")
-            .GetProperty("content")
-            .GetString();
+        translatedText = useGemini
+            ? json.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString()
+            : json.GetProperty("message").GetProperty("content").GetString();
     }
     finally
     {

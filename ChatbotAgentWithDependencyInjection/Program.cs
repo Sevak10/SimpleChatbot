@@ -2,19 +2,19 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using OllamaSharp;
+using OpenAI;
+using System.ClientModel;
 
 
-string endpoint = "http://localhost:11434";
-
-string model = "qwen3.5:9b";
-
-using var ollamaHttpClient = new HttpClient
-{
-    BaseAddress = new Uri(endpoint),
-    Timeout = TimeSpan.FromMinutes(10)
-};
-
-IChatClient ollamaClient = new OllamaApiClient(ollamaHttpClient, model);
+bool useGemini = true;
+string apiKey = "YOUR_GEMINI_API_KEY";
+string endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/";
+string model = "gemini-3.5-flash-lite";
+IChatClient ollamaClient;
+if (useGemini)
+    ollamaClient = new OpenAIClient(new ApiKeyCredential(apiKey), new OpenAIClientOptions { Endpoint = new Uri(endpoint) }).GetChatClient(model).AsIChatClient();
+else
+    ollamaClient = new OllamaApiClient(new HttpClient { BaseAddress = new Uri("http://localhost:11434"), Timeout = TimeSpan.FromMinutes(10) }, "qwen3.5:9b");
 
 using var services = new ServiceCollection()
     .AddSingleton<TimeProvider>(TimeProvider.System)

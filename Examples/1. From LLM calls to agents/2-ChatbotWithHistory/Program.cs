@@ -1,21 +1,29 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
+using OpenAI;
+using System.ClientModel;
 
 Console.WriteLine("Hello, World!");
 
-string endpoint = "http://localhost:11434";
+bool useGemini = true;
+string apiKey = "YOUR_GEMINI_API_KEY";
+string endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/";
+string model = "gemini-3.5-flash-lite";
 
-string model = "qwen3.5:9b";
-
-var httpClient = new HttpClient
+IChatClient configuredClient;
+if (useGemini)
 {
-    BaseAddress = new Uri(endpoint),
-    Timeout = TimeSpan.FromMinutes(10)
-};
-
-using IChatClient chatClient = new OllamaApiClient(
-    httpClient,
-    model);
+    configuredClient = new OpenAIClient(new ApiKeyCredential(apiKey), new OpenAIClientOptions
+    {
+        Endpoint = new Uri(endpoint)
+    }).GetChatClient(model).AsIChatClient();
+}
+else
+{
+    var httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:11434"), Timeout = TimeSpan.FromMinutes(10) };
+    configuredClient = new OllamaApiClient(httpClient, "qwen3.5:9b");
+}
+using IChatClient chatClient = configuredClient;
 
 List<ChatMessage> history = [];
 
@@ -49,7 +57,7 @@ while (true)
     }
     catch (HttpRequestException ex)
     {
-        Console.WriteLine($"Ollama connection error: {ex.Message}");
+        Console.WriteLine($"Chat service connection error: {ex.Message}");
     }
 }
 
